@@ -1,0 +1,14 @@
+.animated-rgb {
+    animation: rainbow 18s ease infinite;
+    background-color: #4285F4; 
+  }
+  
+  @keyframes rainbow {
+    0%{background-color: #4285F4;}
+    17%{background-color: #DE3E35;}
+    33%{background-color: #F7C43D;}
+    50%{background-color: #53D769;}
+    67%{background-color: #64B5F6;}
+    84%{background-color: #5E35B1;}
+    100%{background-color: #4285F4;}
+  }
