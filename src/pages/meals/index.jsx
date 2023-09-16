@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router'
 import Loader from '../../components/Loader'
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { GetErrorHandler } from '../../components/GetErrorHandlerHelper'
 
 const VisuallyHiddenInput = styled('input')`
   clip: rect(0 0 0 0);
@@ -33,7 +34,7 @@ const getCategoryFromServer = () => {
 }
 const getMealsFromServer = () => {
     return request({
-        url : '/meals'
+        url : '/meals?state=1'
     })
 }
 
@@ -133,33 +134,7 @@ const Meals = () => {
         }
     })
 
-    if(getMealsQuery.isLoading || getCategoryQuery.isLoading){
-        return <Loader/>
-    }
-
-    if(getMealsQuery.isError){
-        if(getMealsQuery.error.response){
-          if(getMealsQuery.error.response.status === 401){
-            navigate('/signin')
-          }
-        }else if(getMealsQuery.error.request){
-          return <Typography>Server Not Response With Anything</Typography>
-        }else {
-          return <Typography>Server Response With Unkonwn Error : {getMealsQuery.error.message}</Typography>
-        }
-      }
-
-      if(getCategoryQuery.isError){
-        if(getCategoryQuery.error.response){
-          if(getCategoryQuery.error.response.status === 401){
-            navigate('/signin')
-          }
-        }else if(getCategoryQuery.error.request){
-          return <Typography>Server Not Response With Antthing</Typography>
-        }else {
-          return <Typography>Server Response With Unkonwn Error : {getCategoryQuery.error.message}</Typography>
-        }
-      }
+    
 
     const handleAlterClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -193,7 +168,16 @@ const Meals = () => {
         addMealMutation.mutate(data)
     }
 
-    console.log(getMealsQuery.data.data)
+    if(getMealsQuery.isLoading || getCategoryQuery.isLoading || addMealMutation.isLoading){
+        return <Loader/>
+    }
+
+    if(getMealsQuery.isError){
+        return <GetErrorHandler error={getMealsQuery.error} refetch={getMealsQuery.refetch} />
+    }
+    if(getCategoryQuery.isError){
+        return <GetErrorHandler error={getCategoryQuery.error} refetch={getCategoryQuery.refetch} />
+    }
     return (
       <>
         <Box>

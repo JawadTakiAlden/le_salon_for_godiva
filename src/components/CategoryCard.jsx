@@ -1,7 +1,7 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, IconButton, TextField, Typography, useMediaQuery } from '@mui/material'
 import React, { useState } from 'react'
 import CategoryImage from '../assets/images/meal-01.jpg'
-import { DeleteOutlined, UpdateOutlined } from '@mui/icons-material'
+import { DeleteOutlined, UpdateOutlined, Visibility, VisibilityOff } from '@mui/icons-material'
 import { useMutation } from '@tanstack/react-query'
 import { imageBaseURL, request } from '../api/request'
 import { Formik } from 'formik'
@@ -21,6 +21,13 @@ const VisuallyHiddenInput = styled('input')`
   white-space: nowrap;
   width: 1px;
 `;
+
+const hideCategoryInServer = (id) => {
+    return request({
+        url : `/switch-category/${id}`,
+        method : 'patch'
+    })
+}
 
 
 const CategoryCard = ({data , setAlterMessage , setMessageType , setAlterOpen , refetch}) => {
@@ -121,6 +128,65 @@ const handleFormClose = (event, reason) => {
               },
         onSuccess : () => {
             handleFormClose()
+            setImagePreview(null)
+            setAlterMessage('category updated successfully')
+            setMessageType('info')
+            setAlterOpen(true)
+            refetch()
+        }
+    })
+
+        const hideMealMutatrtion = useMutation({
+        mutationKey : ['hide-category-in-server'],
+        mutationFn : hideCategoryInServer,
+        onError : (error) => {
+            if (error.response){
+              switch(error.response.status){
+                case 401 : {
+                  setAlterMessage('you are not authorize to make this action')
+                  setMessageType('error')
+                  setAlterOpen(true)
+                  break
+                }
+                case 422 : {
+                  setAlterMessage('there are some issues with your data')
+                  setMessageType('error')
+                  setAlterOpen(true)
+                  break
+                }
+                case 500 : {
+                  setAlterMessage('we have a problem in our server , come later')
+                  setMessageType('error')
+                  setAlterOpen(true)
+                  break
+                }
+                case 404 : {
+                  setAlterMessage("we out of space , we can't find your destenation")
+                  setMessageType('error')
+                  setAlterOpen(true)
+                  break
+                }
+                default : {
+                  setAlterMessage("unkown error accoure : request falid with status code" + error.response.status)
+                  setMessageType('error')
+                  setAlterOpen(true)
+                  break
+                }
+              }
+            }else if(error.request){
+              setAlterMessage('server response with nothing , Check your internet connection or contact support if the problem persists')
+              setMessageType('error')
+              setAlterOpen(true)
+            }else {
+              setAlterMessage('unknow error : ' + error.message)
+              setMessageType('error')
+              setAlterOpen(true)
+            }
+          },
+        onSuccess : () => {
+            setAlterMessage('category updated successfully')
+            setMessageType('info')
+            setAlterOpen(true)
             refetch()
         }
     })
@@ -138,6 +204,10 @@ const handleFormClose = (event, reason) => {
             url : `/categories/${data.id}`,
             method : 'delete'
         })
+    }
+
+    const hideCategoryHandler = (id) => {
+        hideMealMutatrtion.mutate(id)
     }
 
 
@@ -207,7 +277,7 @@ const validationSchema = Yup.object({
         deleteCategoryMutation.mutate()
     }
 
-    if(deleteCategoryMutation.isLoading){
+    if(deleteCategoryMutation.isLoading || hideMealMutatrtion.isLoading || updateCategoruMutation.isLoading){
         return <Loader/>
     }
   return (
@@ -300,6 +370,26 @@ const validationSchema = Yup.object({
                     <UpdateOutlined 
                         color='warning'
                         />
+                </Fab>
+                <Fab
+                    sx={{
+                        backgroundColor :'transparent',
+                        "&:hover" :{
+                            backgroundColor :'transparent',
+                        }
+                    }}
+
+                    onClick={() => hideCategoryHandler(data.id)}
+                >
+                    {
+                        data.visible
+                        ? (
+                            <VisibilityOff  color='info'/>
+                        )
+                        : (
+                            <Visibility color='info' />
+                        )
+                    }
                 </Fab>
             </Box>
             

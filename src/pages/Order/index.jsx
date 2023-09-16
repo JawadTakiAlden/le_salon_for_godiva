@@ -6,6 +6,7 @@ import { request } from '../../api/request';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import Loader from '../../components/Loader';
+import { GetErrorHandler } from '../../components/GetErrorHandlerHelper';
 
 
 const columns = [
@@ -28,18 +29,6 @@ const columns = [
             </Box>
         )
     },
-    { field: 'actions', type : 'actions' , headerName: 'Action', width : 200 ,  
-        renderCell : (params) => (
-            <Box>
-                <IconButton>
-                    <ArrowOutward color='warning' />
-                </IconButton>
-                <IconButton>
-                    <DeleteOutlined color='error' />
-                </IconButton>
-            </Box>
-        )
-    },
 ];
 
 const getOrdersFromServer = () => {
@@ -49,8 +38,6 @@ const getOrdersFromServer = () => {
 }
 
 const Orders = () => {
-
-    const navigate = useNavigate()
     const ordersQuery = useQuery({
         queryKey : ['get-orders-from-server'],
         queryFn : getOrdersFromServer
@@ -61,16 +48,8 @@ const Orders = () => {
     }
 
     if(ordersQuery.isError){
-        if(ordersQuery.error.response){
-          if(ordersQuery.error.response.status === 401){
-            navigate('/signin')
-          }
-        }else if(ordersQuery.error.request){
-          return <Typography>Server Not Response With Nothing</Typography>
-        }else {
-          return <Typography>Server Response With Unkonwn Error : {ordersQuery.error.message}</Typography>
-        }
-      }
+        return <GetErrorHandler error={ordersQuery.error} refetch={ordersQuery.refetch} />
+    }
   return (
     <Box 
         sx={{

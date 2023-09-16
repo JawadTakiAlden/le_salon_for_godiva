@@ -284,7 +284,7 @@ const MealCard = ({withActions , setAlterMessage , setMessageType , data , setAl
         deleteFromServer.mutate()
     }
 
-    if(deleteFromServer.isLoading || hideMealMutatrtion.isLoading){
+    if(deleteFromServer.isLoading || hideMealMutatrtion.isLoading || updateMealMutation.isLoading){
         return <Loader />
     }
   return (
@@ -350,70 +350,6 @@ const MealCard = ({withActions , setAlterMessage , setMessageType , data , setAl
             >
                 {data.price} SAD
             </Typography>
-            {/* <Box
-                sx={{
-                    display : 'flex',
-                    alignItems : 'center',
-                    gap : '10px',
-                    flexWrap : 'wrap',
-                }}
-            >
-                <Typography
-                    sx={{
-                        width : 'fit-content',
-                        padding : '4px 16px',
-                        borderRadius : '20px',
-                        border : '1px solid #23db3c',
-                        color : '#a6a6a6'
-                    }}
-                >
-                    jawad
-                </Typography>
-                <Typography
-                    sx={{
-                        width : 'fit-content',
-                        padding : '4px 16px',
-                        borderRadius : '20px',
-                        border : '1px solid #23db3c',
-                        color : '#a6a6a6'
-                    }}
-                >
-                    noor
-                </Typography>
-                <Typography
-                    sx={{
-                        width : 'fit-content',
-                        padding : '4px 16px',
-                        borderRadius : '20px',
-                        border : '1px solid #23db3c',
-                        color : '#a6a6a6'
-                    }}
-                >
-                    firas
-                </Typography>
-                <Typography
-                    sx={{
-                        width : 'fit-content',
-                        padding : '4px 16px',
-                        borderRadius : '20px',
-                        border : '1px solid #23db3c',
-                        color : '#a6a6a6'
-                    }}
-                >
-                    ali
-                </Typography>
-                <Typography
-                    sx={{
-                        width : 'fit-content',
-                        padding : '4px 16px',
-                        borderRadius : '20px',
-                        border : '1px solid #23db3c',
-                        color : '#a6a6a6'
-                    }}
-                >
-                    adnan
-                </Typography>
-            </Box> */}
         </Box>
         {
             withActions

@@ -8,6 +8,7 @@ import OrderCards from '../OrderCards';
 import ReadyOrders from '../../components/ReadyOrders';
 import { useNavigate } from 'react-router';
 import Loader from '../../components/Loader';
+import { GetErrorHandler } from '../../components/GetErrorHandlerHelper';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -42,28 +43,11 @@ const Statistics = () => {
         return <Loader/>
     }
     if(orderRateQuery.isError){
-        if(orderRateQuery.error.response){
-          if(orderRateQuery.error.response.status === 401){
-            navigate('/signin')
-          }
-        }else if(orderRateQuery.error.request){
-          return <Typography>Server Not Response With Anything</Typography>
-        }else {
-          return <Typography>Server Response With Unkonwn Error : {orderRateQuery.error.message}</Typography>
-        }
-      }
-
-      if(timeStatisticsQuery.isError){
-        if(timeStatisticsQuery.error.response){
-          if(timeStatisticsQuery.error.response.status === 401){
-            navigate('/signin')
-          }
-        }else if(timeStatisticsQuery.error.request){
-          return <Typography>Server Not Response With Anything</Typography>
-        }else {
-          return <Typography>Server Response With Unkonwn Error : {timeStatisticsQuery.error.message}</Typography>
-        }
-      }
+      return <GetErrorHandler error={orderRateQuery.error} refetch={orderRateQuery.refetch} />
+  }
+    if(timeStatisticsQuery.isError){
+      return <GetErrorHandler error={timeStatisticsQuery.error} refetch={timeStatisticsQuery.refetch} />
+    }
 
     const orderRate = orderRateQuery.data.data
     const timeStatistics = timeStatisticsQuery.data.data

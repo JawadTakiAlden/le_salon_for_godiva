@@ -12,6 +12,7 @@ import Loader from '../../components/Loader'
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useNavigate } from 'react-router'
+import { GetErrorHandler } from '../../components/GetErrorHandlerHelper'
 
 const VisuallyHiddenInput = styled('input')`
   clip: rect(0 0 0 0);
@@ -28,7 +29,10 @@ const VisuallyHiddenInput = styled('input')`
 
 const getCategoriesFromServer = () => {
     return request({
-        url : '/categories'
+        url : '/categories?state=1',
+        data : {
+            state : 1
+        }
     })
 }
 
@@ -130,21 +134,7 @@ const Categories = () => {
         addCategoruMutation.mutate(categoryValues)
     }
 
-    if(categoriesQuery.isLoading){
-        return <Loader />
-    }
-
-    if(categoriesQuery.isError){
-        if(categoriesQuery.error.response){
-          if(categoriesQuery.error.response.status == 401){
-            navigate('/signin')
-          }
-        }else if(categoriesQuery.error.request){
-          return <Typography>Server Not Response With Anything</Typography>
-        }else {
-          return <Typography>Server Response With Unkonwn Error : {categoriesQuery.error.message}</Typography>
-        }
-      }
+    
 
     const handleAlterClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -166,9 +156,12 @@ const Categories = () => {
         setAddFormOpen(true)
     }
 
-
-    if(addCategoruMutation.isLoading){
+    if(categoriesQuery.isLoading || addCategoruMutation.isLoading){
         return <Loader />
+    }
+
+    if(categoriesQuery.isError){
+        return <GetErrorHandler error={categoriesQuery.error} refetch={categoriesQuery.refetch} />
     }
 
   return (
